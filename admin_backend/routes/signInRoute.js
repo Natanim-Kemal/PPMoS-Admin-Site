@@ -1,36 +1,58 @@
 const express = require('express');
-const bcrypt = require('bcrypt'); // Password hashing
-const jwt = require('jsonwebtoken'); // JWT generation
-const User = require('../models/User'); // User model for different roles
-
+const jwt = require('jsonwebtoken');
+const Advisor = require('../models/advisorModel');
+const Dean = require('../models/deanModel');
+const Student = require('../models/studentModel');
+const PgCoordinator = require('../models/pgCoordinator');
+const Chair = require('../models/chairModel');
 const router = express.Router();
 
-// Signin route with JWT generation
+
 router.post('/signin', async (req, res) => {
   const { role, username, password } = req.body;
 
   try {
-    // Find user by username and role
-    const user = await User.findOne({ username, role });
+    let user;
+    switch (role) {
+      case "Advisor":
+      case "advisor":
+        user = await Advisor.findOne({ username });
+        break;
+      case "Dean":
+      case "dean":
+        user = await Dean.findOne({ username });
+        break;
+      case "Student":
+      case "student":
+        user = await Student.findOne({ username });
+        break;
+      case "PG-coordinator":
+      case "PgCoordinator":
+      case "pgCoordinator":
+      case "pgcoordinator":
+        user = await PgCoordinator.findOne({ username });
+        break;
+      case "Chair":
+      case "chair":
+        user = await Chair.findOne({ username });
+        break;
+      default:
+        return res.status(400).json({ message: "Invalid role" });
+    }
 
-    // If user doesn't exist, return an error
     if (!user) {
       return res.status(400).json({ message: "Invalid username or role" });
     }
 
-    // Compare password with the stored hashed password
-    const validPassword = await bcrypt.compare(password, user.password);
-    if (!validPassword) {
+    if (!password) {
       return res.status(400).json({ message: "Invalid credentials" });
     }
 
-    // Generate JWT token with user ID and role
     const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
-    // Send the token back to the frontend
     res.status(200).json({
       message: "Login successful!",
-      token: token, // Send token back to the frontend
+      token: token,
     });
 
   } catch (err) {

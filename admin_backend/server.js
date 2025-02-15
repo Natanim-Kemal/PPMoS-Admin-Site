@@ -2,38 +2,32 @@ const express = require("express");
 const dotenv = require("dotenv");
 const cors = require("cors");
 const bodyParser = require("body-parser");
-const connectDB = require("./config/db"); // Import the connectDB function
+const connectDB = require("./config/db");
 
-dotenv.config(); // Load environment variables
+dotenv.config();
 
 const app = express();
 
-// Connect to the database
 connectDB();
 
-// Middleware
 app.use(cors());
 app.use(bodyParser.json());
 
-// Routes
 const studentRoutes = require("./routes/studentRoutes");
 const deanRoutes = require("./routes/deanRoutes");
 const advisorRoutes = require("./routes/advisorRoutes");
 const pgCoordinatorRoutes = require("./routes/pgCoordinatorRoutes");
 const chairRoutes = require("./routes/chairRoutes");
-
-// Add other routes here
+const signInRoute = require("./routes/signInRoute");
 
 app.use("/api/students", studentRoutes);
 app.use("/api/deans", deanRoutes);
-app.use("/api/chairs", chairRoutes)
-app.use("/api/pgcoordinators", pgCoordinatorRoutes)
-app.use("/api/advisors", advisorRoutes)
+app.use("/api/chairs", chairRoutes);
+app.use("/api/pgcoordinators", pgCoordinatorRoutes);
+app.use("/api/advisors", advisorRoutes);
+app.use("/api/auth", signInRoute); 
 
-// Add other route uses here
-
-// Start server
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 9000; // Ensure the port is set to 9000
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
