@@ -41,7 +41,7 @@ router.post('/signin', async (req, res) => {
     }
 
     if (!user) {
-      return res.status(400).json({ message: "Invalid username or role" });
+      return res.status(400).json({ message: "User not found" });
     }
 
     if (!password) {
