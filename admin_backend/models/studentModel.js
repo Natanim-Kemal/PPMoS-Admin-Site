@@ -5,11 +5,18 @@ const studentSchema = new mongoose.Schema({
   lastName: String,
   idNo: { type: String, unique: true },
   username: { type: String, unique: true },
-  password: String,
-  year: String,
-  specialization: String,
-  advisor: String,
   role: { type: String, required: true },
+  email: {
+    type: String,
+    unique: true,
+    match: [/^\S+@\S+\.\S+$/, 'Please enter a valid email address']
+  },
+  password: String,
+  department: String,
+  year: String,
+  phoneNo: Number,
+  specialization: String,
+  advisor: String
 });
 
 module.exports = mongoose.model("Student", studentSchema);
