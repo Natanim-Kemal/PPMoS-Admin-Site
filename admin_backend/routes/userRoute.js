@@ -56,4 +56,50 @@ router.put('/update', async (req, res) => {
   }
 });
 
+router.post('/get', async (req, res) => {
+  const { user } = req.body;
+  const userId = user.id;
+  const role = user.role;
+
+  try {
+    let fetchedUser;
+    switch (role) {
+      case "Advisor":
+      case "advisor":
+        fetchedUser = await Advisor.findById(userId);
+        break;
+      case "Dean":
+      case "dean":
+        fetchedUser = await Dean.findById(userId);
+        break;
+      case "Student":
+      case "student":
+        fetchedUser = await Student.findById(userId);
+        break;
+      case "PG-coordinator":
+      case "PgCoordinator":
+      case "pgCoordinator":
+      case "pgcoordinator":
+        fetchedUser = await PgCoordinator.findById(userId);
+        break;
+      case "Chair":
+      case "chair":
+        fetchedUser = await Chair.findById(userId);
+        break;
+      default:
+        return res.status(400).json({ message: "Invalid role" });
+    }
+
+    if (!fetchedUser) {
+      return res.status(400).json({ message: "User not found" });
+    }
+
+    res.status(200).json(fetchedUser);
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
 module.exports = router;
